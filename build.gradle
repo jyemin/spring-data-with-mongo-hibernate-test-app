@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.5'
+    id 'org.springframework.boot' version '4.0.6'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -14,17 +14,23 @@ java {
     }
 }
 
+ext['hibernate.version'] = '7.3.7.Final'
+
 repositories {
     mavenCentral()
     mavenLocal()
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    // Actuator exposes the Mongo health indicator and connection-pool metrics for the single borrowed client.
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // The turnkey path: this single starter brings the JPA stack (Spring Data JPA + Hibernate ORM) and the
+    // spring-boot-mongodb MongoClient infrastructure it borrows. It deliberately does NOT pull a SQL
+    // connection pool (HikariCP), so Spring Boot's DataSourceAutoConfiguration stays inert. Activation and
+    // connection are configured in application.properties (spring.jpa.database-platform + spring.mongodb.uri).
+    implementation 'org.mongodb:mongodb-hibernate-spring-boot-starter:1.0.0-alpha1-SNAPSHOT'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'org.mongodb:mongodb-hibernate:1.0.0-alpha0'
-    implementation('org.springframework.boot:spring-boot-starter-data-jpa:3.5.0')
 }
 
 
